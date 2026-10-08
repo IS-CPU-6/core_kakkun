@@ -11,11 +11,11 @@ module register_file(
 );
 
     logic [31:0] regs [31:0];
-    assign rdata1 = regs[addr1];
-    assign rdata2 = regs[addr2];
+    assign rdata1 = regs [addr1];
+    assign rdata2 = regs [addr2];
     always_ff @(posedge clk) begin
-        if (rst_n && we==1 && waddr != 0) begin
-            regs[waddr] <= wdata;
+        if (rst_n && we && waddr != 0) begin
+            regs [waddr] <= wdata;
         end 
     end
 endmodule

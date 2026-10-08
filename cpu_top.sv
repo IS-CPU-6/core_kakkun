@@ -1,3 +1,6 @@
+`include "cpu_types.svh"
+import cpu_pkg::*;
+
 module cpu_top (
     input logic clk,
     input logic rst_n,
@@ -5,9 +8,20 @@ module cpu_top (
     output logic halt
 );
 
-    logic[31:0] instr;
+    logic [31:0] instr;
 
     "instruction memory rdata = instr"
+
+    instruction_t d_instr;
+
+    instruction_decoder u_instruction_decoder(
+        .instr (instr)
+        .d_instr (d_instr)
+    )
+
+
+
+    
 
     assign halt = (instr == 32'b00000000000100000000000001110011);
 
@@ -36,7 +50,7 @@ module cpu_top (
         .result (imm_result)
     )
 
-    
+
 
 
 
