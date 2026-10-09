@@ -1,4 +1,4 @@
-`include "cpu_types.svh"
+`include "cpu_typedef.svh"
 import cpu_pkg::*;
 
 module data_memory #(
@@ -17,6 +17,15 @@ module data_memory #(
     logic [7:0] mem1 [0:MEM_DEPTH-1];
     logic [7:0] mem2 [0:MEM_DEPTH-1];
     logic [7:0] mem3 [0:MEM_DEPTH-1];
+
+    initial begin
+        for (int i = 0; i < MEM_DEPTH; i++) begin
+            mem0[i] = 8'd0;
+            mem1[i] = 8'd0;
+            mem2[i] = 8'd0;
+            mem3[i] = 8'd0;
+        end
+    end
 
     wire [$clog2(MEM_DEPTH)-1:0] word_idx = addr[$clog2(MEM_DEPTH)+1 : 2];
     wire [1:0] byte_offset = addr[1:0];
@@ -47,6 +56,7 @@ module data_memory #(
         end
     end
 
+    logic [31:0] aligned_wdata;
     assign aligned_wdata = (d_instr == INST_SB) ? (wdata << (byte_offset * 8)) :
                            (d_instr == INST_SH) ? (wdata << (byte_offset * 8)) :
                            wdata;

@@ -1,5 +1,5 @@
-`ifndef CPU_TYPES_SVH
-`define CPU_TYPES_SVH
+`ifndef CPU_TYPEDEF_SVH
+`define CPU_TYPEDEF_SVH
 
 package cpu_pkg;
 
@@ -75,6 +75,21 @@ package cpu_pkg;
         ALU_SRL,
         ALU_SRA
     }alu_control_t;
+
+    typedef enum logic [0:0] {
+        DISABLE,
+        ABLE
+    }write_enable_t;
+
+    typedef enum logic [0:0] {
+        REG_RDATA2,
+        IMM
+    }alu_src_b_op_t;
+
+    typedef enum logic [0:0] {
+        ALU_RESULT,
+        MEM_RDATA
+    }reg_wdata_op_t;
 
 endpackage
 

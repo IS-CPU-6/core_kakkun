@@ -1,4 +1,4 @@
-`include "cpu_types.svh"
+`include "cpu_typedef.svh"
 import cpu_pkg::*;
 
 module alu(
@@ -27,6 +27,7 @@ module alu(
     end
 
 endmodule
+
 
 
 
