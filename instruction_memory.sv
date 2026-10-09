@@ -16,7 +16,9 @@ module instruction_memory #(
     logic [7:0] mem2 [0:MEM_DEPTH-1];
     logic [7:0] mem3 [0:MEM_DEPTH-1];
 
-     wire [$clog2(MEM_DEPTH)-1:0] word_idx = addr[$clog2(MEM_DEPTH)+1:2];
+    wire [$clog2(MEM_DEPTH)-1:0] word_idx = addr[$clog2(MEM_DEPTH)+1:2];
+
+    assign data = {mem3 [word_idx], mem2 [word_idx], mem1 [word_idx], mem0 [word_idx]};
 
     initial begin
         for (int i = 0; i < MEM_DEPTH; i++) begin
@@ -25,6 +27,7 @@ module instruction_memory #(
             mem2 [i] = 8'd0;
             mem3 [i] = 8'd0;
         end
+    
 
         if ($value$plusargs("loadhex=%s", hex_file)) begin
             $readmemh(hex_file, temp_mem);
@@ -38,9 +41,8 @@ module instruction_memory #(
             mem2[i] = temp_mem[i][23:16];
             mem3[i] = temp_mem[i][31:24];
         end
-
-    assign data = {mem3 [word_idx], mem2 [word_idx], mem1 [word_idx], mem0 [word_idx]};
     end
+
 
 endmodule
 

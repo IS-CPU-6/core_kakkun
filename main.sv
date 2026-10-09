@@ -39,15 +39,19 @@ module main;
         #20; 
     end
 
+
     initial begin
-        #50000;
+        #500;
         $display("[TB] ERROR: Simulation Timeout!");
         $finish;
     end
 
+
     always @(posedge clk) begin
         if (rst_n && !halt) begin
             $display("Time=%0t | PC=0x%08h | Instr=0x%08h (%0s)",$time, pc , u_cpu_top.instr , u_cpu_top.d_instr.name());
+        end else if (rst_n) begin
+            $finish;
         end
     end
 
