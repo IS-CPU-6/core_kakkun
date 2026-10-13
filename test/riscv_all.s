@@ -1,15 +1,5 @@
 label:
     lui x1, 0x12345
-    auipc x1, 0x12345
-    jal x1, label
-    jalr x1, -12(x2)
-
-    beq x1, x2, label
-    bne x1, x2, label
-    blt x1, x2, label
-    bge x1, x2, label
-    bltu x1, x2, label
-    bgeu x1, x2, label
     
     lb x1, 4(x2)
     lh x1, 4(x2)
@@ -41,8 +31,6 @@ label:
     or x1, x2, x3
     and x1, x2, x3
 
-    ebreak
-
     mul x1, x2, x3
     mulh x1, x2, x3
     mulhsu x1, x2, x3
@@ -50,6 +38,8 @@ label:
     divu x1, x2, x3
     rem x1, x2, x3
     remu x1, x2, x3
+
+    ebreak
 
     flw f1, -12(x2)
     fsw f1, -12(x2)

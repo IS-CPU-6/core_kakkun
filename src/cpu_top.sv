@@ -4,9 +4,10 @@ import cpu_pkg::*;
 module cpu_top (
     input logic clk,
     input logic rst_n,
-    output logic [31:0] pc,
     output logic halt
 );
+
+    logic [31:0] pc;
     logic [31:0] pc_plus_4;
 
     always_comb begin

@@ -4,13 +4,11 @@ module main;
 
     logic clk;
     logic rst_n;
-    logic [31:0] pc;
     logic halt;
 
     cpu_top u_cpu_top (
         .clk (clk),
         .rst_n (rst_n),
-        .pc (pc),
         .halt (halt)
     );
 
