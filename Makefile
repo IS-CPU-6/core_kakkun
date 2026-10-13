@@ -21,7 +21,7 @@ VFLAGS := --binary --timing -Wall -Wno-fatal \
           --trace -I$(SRC_DIR)
 
 %.hex: %.s
-	cargo run --manifest-path ../assembler/Cargo.toml -- --input $< --output temp.bin
+	cargo run --manifest-path ./assembler/Cargo.toml -- --input $< --output temp.bin
 	hexdump -v -e '1/4 "%08x\n"' temp.bin > $@
 	rm -f temp.bin
 
@@ -31,10 +31,6 @@ $(TARGET): $(SRCS)
 	@echo "=== Source updated! Rebuilding Verilator simulation model... ==="
 	verilator $(VFLAGS) $(SRCS)
 	@echo "=== Build Complete: $@ ==="
-
-run: $(TARGET)
-	@echo "=== Running simulation with $(HEX) ==="
-	./$(TARGET) +loadhex=$(HEX)
 
 test: $(TARGET) $(TEST).hex
 	@echo "=== Running test for $(TEST) ==="
