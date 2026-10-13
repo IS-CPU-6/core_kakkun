@@ -8,7 +8,9 @@ RV32Iのsystem verilog実装です
 make test TEST=[テスト名]
 ex)make test TEST=test/fibonacci
 ```
+# assemblerをcloneするためのコマンド
 
-
-
+```
+git submodule update --init --recursive
+```
 
