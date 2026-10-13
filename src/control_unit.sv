@@ -183,14 +183,38 @@ module control_unit(
             INST_FENCE: ;
             INST_PAUSE: ;
 
-            INST_MUL: ;
-            INST_MULH: ;
-            INST_MULHSU: ;
-            INST_MULHU: ;
-            INST_DIV: ;
-            INST_DIVU: ;
-            INST_REM: ;
-            INST_REMU: ;
+            INST_MUL: begin
+                reg_we = ABLE;
+                alu_control = ALU_MUL;
+            end
+            INST_MULH: begin
+                reg_we = ABLE;
+                alu_control = ALU_MULH;
+            end
+            INST_MULHSU: begin
+                reg_we = ABLE;
+                alu_control = ALU_MULHSU;
+            end
+            INST_MULHU: begin
+                reg_we = ABLE;
+                alu_control = ALU_MULHU;
+            end
+            INST_DIV: begin
+                reg_we = ABLE;
+                alu_control = ALU_DIV;
+            end
+            INST_DIVU: begin
+                reg_we = ABLE;
+                alu_control = ALU_DIVU;
+            end
+            INST_REM: begin
+                reg_we = ABLE;
+                alu_control = ALU_REM;
+            end
+            INST_REMU: begin
+                reg_we = ABLE;
+                alu_control = ALU_REMU;
+            end
         endcase
     end
 endmodule

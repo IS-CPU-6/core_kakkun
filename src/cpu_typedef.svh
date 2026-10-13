@@ -63,7 +63,7 @@ package cpu_pkg;
 
     }instruction_t;
 
-    typedef enum logic [3:0] {
+    typedef enum logic [4:0] {
         ALU_AND,
         ALU_OR,
         ALU_ADD,
@@ -73,7 +73,15 @@ package cpu_pkg;
         ALU_SLTU,
         ALU_SLL,
         ALU_SRL,
-        ALU_SRA
+        ALU_SRA,
+        ALU_MUL,
+        ALU_MULH,
+        ALU_MULHSU,
+        ALU_MULHU,
+        ALU_DIV,
+        ALU_DIVU,
+        ALU_REM,
+        ALU_REMU
     }alu_control_t;
 
     typedef enum logic [0:0] {
