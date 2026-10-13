@@ -1,0 +1,4 @@
+[submodule "assembler"]
+	path = assembler
+	url = git@github.com:IS-CPU-6/assembler.git
+	branch = master
