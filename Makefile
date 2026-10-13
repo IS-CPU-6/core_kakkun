@@ -20,10 +20,19 @@ VFLAGS := --binary --timing -Wall -Wno-fatal \
           -Wno-CASEINCOMPLETE -Wno-SYNCASYNCNET \
           --trace -I$(SRC_DIR)
 
-%.hex: %.s
-	cargo run --manifest-path ./assembler/Cargo.toml -- --input $< --output temp.bin
-	hexdump -v -e '1/4 "%08x\n"' temp.bin > $@
-	rm -f temp.bin
+# spike simはelfしか読めないっぽいので, 一度binを生成したあとでこねこねしてelfにする
+%.bin: %.s
+	cargo run --manifest-path ./assembler/Cargo.toml -- --input $< --output $@
+
+%.o: %.bin
+	riscv64-unknown-elf-objcopy -I binary -O elf32-littleriscv -B riscv \
+		--rename-section .data=.text,alloc,load,readonly,code,contents \
+		$< $@
+
+%.elf: %.o bin.ld
+	riscv64-unknown-elf-ld -m elf32lriscv -T bin.ld --defsym=_start=0x0 -o $@ $<
+
+.SECONDARY:
 
 all: $(TARGET)
 
@@ -32,7 +41,7 @@ $(TARGET): $(SRCS)
 	verilator $(VFLAGS) $(SRCS)
 	@echo "=== Build Complete: $@ ==="
 
-test: $(TARGET) $(TEST).hex
+test: $(TARGET) $(TEST).elf
 	@echo "=== Running test for $(TEST) ==="
 	./$(TARGET) +loadhex=$(TEST).hex
 
