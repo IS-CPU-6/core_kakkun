@@ -97,77 +97,78 @@ _start:
     bne  x2, x1, fail_sltu
 
     addi x3, x0, 1
-    ebreak
+    beq x0, x0, exit
 
 fail_add:
     addi x3, x0, 101
-    ebreak
+    beq x0, x0, exit
 
 fail_sub:
     addi x3, x0, 102
-    ebreak
+    beq x0, x0, exit
 
 fail_andi:
     addi x3, x0, 103
-    ebreak
+    beq x0, x0, exit
 
 fail_ori:
     addi x3, x0, 104
-    ebreak
+    beq x0, x0, exit
 
 fail_xori:
     addi x3, x0, 105
-    ebreak
+    beq x0, x0, exit
 
 fail_and:
     addi x3, x0, 106
-    ebreak
+    beq x0, x0, exit
 
 fail_or:
     addi x3, x0, 107
-    ebreak
+    beq x0, x0, exit
 
 fail_xor:
     addi x3, x0, 108
-    ebreak
+    beq x0, x0, exit
 
 fail_slli:
     addi x3, x0, 109
-    ebreak
+    beq x0, x0, exit
 
 fail_sll:
     addi x3, x0, 110
-    ebreak
+    beq x0, x0, exit
 
 fail_srli:
     addi x3, x0, 111
-    ebreak
+    beq x0, x0, exit
 
 fail_srl:
     addi x3, x0, 112
-    ebreak
+    beq x0, x0, exit
 
 fail_srai:
     addi x3, x0, 113
-    ebreak
+    beq x0, x0, exit
 
 fail_sra:
     addi x3, x0, 114
-    ebreak
+    beq x0, x0, exit
 
 fail_slti:
     addi x3, x0, 115
-    ebreak
+    beq x0, x0, exit
 
 fail_slt:
     addi x3, x0, 116
-    ebreak
+    beq x0, x0, exit
 
 fail_sltiu:
     addi x3, x0, 117
-    ebreak
+    beq x0, x0, exit
 
 fail_sltu:
     addi x3, x0, 118
-    ebreak
+    beq x0, x0, exit
 
+exit:

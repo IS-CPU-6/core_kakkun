@@ -3,14 +3,17 @@
 
 RV32Iのsystem verilog実装です
 
+# セットアップ
+```
+git submodule update --init --recursive
+sudo chmod +x scripts/*.sh
+sudo chmod +x assembler/scripts/*.sh
+```
+
+
 # 動かし方
 ```
 make test TEST=[テスト名]
 ex)make test TEST=test/fibonacci
 ```
-# assemblerをcloneするためのコマンド
-
-```
-git submodule update --init --recursive
-```
-
+- 詳細やバイナリはbuild/*.logに送られる。

@@ -39,8 +39,6 @@ label:
     rem x1, x2, x3
     remu x1, x2, x3
 
-    ebreak
-
     flw f1, -12(x2)
     fsw f1, -12(x2)
 

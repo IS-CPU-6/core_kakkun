@@ -5,5 +5,4 @@ _start:
     rem x2, x5, x6
     divu x3, x5, x6
     remu x4, x5, x6
-    ebreak
 

@@ -1,0 +1,1 @@
+perl -i -ne 'print unless /^-+ /' "$1"
