@@ -6,6 +6,27 @@ module cpu_top (
     input  logic rst_n,
     output logic halt
 );
+  //hazard_section
+
+  stall_t stall;
+  forward_t rdata1_forward;
+  forward_t rdata2_forward;
+
+  hazard_unit u_hazard_unit (
+    .EX_branch_taken (EX_branch_taken),
+    .ID_d_instr (ID_d_instr),
+    .EX_d_instr (EX_d_instr),
+    .MEM_d_instr (MEM_d_instr),
+    .EX_reg_we (EX_reg_we),
+    .MEM_reg_we (MEM_reg_we),
+    .ID_reg_addr1 (ID_reg_addr1),
+    .ID_reg_addr2 (ID_reg_addr2),
+    .EX_reg_waddr (EX_reg_waddr),
+    .MEM_reg_waddr (MEM_reg_waddr),
+    .stall (stall),
+    .rdata1_forward (rdata1_forward),
+    .rdata2_forward (rdata2_forward)
+  );
 
   //IF_section
 
@@ -20,9 +41,13 @@ module cpu_top (
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       IF_pc <= 32'd0;
-    end else (!halt) begin
+    end else if (!halt && (stall == BRANCH_STALL)) begin
+      IF_pc <= EX_pc_jump_target;
+    end else if (!halt && (stall == RAW_STALL)) begin
+      IF_pc <= IF_pc;
+    end else if (!halt) begin
       IF_pc <= IF_pc_plus4;
-    end 
+    end
   end
 
 
@@ -44,10 +69,14 @@ module cpu_top (
   instruction_t ID_d_instr;
 
   always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
+    if (!rst_n || (stall == BRANCH_STALL)) begin
       ID_pc <= 32'd0;
       ID_instr <= 32'h00000013;
       ID_pc_plus4 <= 32'd0;
+    end else (stall == RAW_STALL) begin
+      ID_instr <= ID_instr;
+      ID_pc <= ID_pc;
+      ID_pc_plus4 <= ID_pc_plus4;
     end else begin
       ID_instr <= IF_instr;
       ID_pc <= IF_pc;
@@ -122,9 +151,14 @@ module cpu_top (
   logic EX_branch_taken;
   instruction_t EX_d_instr;
 
+
   logic [31:0] EX_reg_rdata1;
   logic [31:0] EX_reg_rdata2;
+  logic [31:0] EX_true_reg_rdata1;
+  logic [31:0] EX_true_reg_redata2;
   logic [31:0] EX_imm_result;
+  forward_t EX_rdata1_forward;
+  forward_t EX_rdata2_forward;
 
   logic [31:0] EX_alu_src_a;
   logic [31:0] EX_alu_src_b;
@@ -136,7 +170,7 @@ module cpu_top (
   reg_wdata_op_t EX_reg_wdata_op;
 
   always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
+    if (!rst_n || (stall == RAW_STALL) || (stall == BRANCH_STALL)) begin
       EX_pc <= 32'd0;
       EX_pc_plus4 <= 32'd0;
       EX_reg_waddr <= 32'd0;
@@ -144,11 +178,13 @@ module cpu_top (
       EX_reg_rdata2 <= 32'd0;
       EX_imm_result <= 32'd0;
       EX_alu_control <= ALU_ADD;
-      EX_d_instr <= INST_ILLEGAL;
+      EX_d_instr <= INST_ADDI;
       EX_alu_src_b_op <= REG_RDATA2;
       EX_reg_we <= DISABLE;
       EX_mem_we <= DISABLE;
       EX_reg_wdata_op <= ALU_RESULT;
+      EX_rdata1_forward <= NON_FORWARD;
+      EX_rdata2_forward <= NON_FORWARD;
     end else begin
       EX_pc <= ID_pc;
       EX_pc_plus4 <= ID_pc_plus4;
@@ -162,9 +198,12 @@ module cpu_top (
       EX_reg_we <= ID_reg_we;
       EX_mem_we <= ID_mem_we;
       EX_reg_wdata_op <= ID_reg_wdata_op;
+      EX_rdata1_forward <= rdata1_forward;
+      EX_rdata2_forward <= rdata2_forward;
     end
   end
 
+  assign EX_true_reg_rdata1 = 
 
   always_comb begin
     case (EX_d_instr)
@@ -172,7 +211,7 @@ module cpu_top (
         EX_alu_src_a = EX_pc;
       end
       default: begin
-        EX_alu_src_a = EX_reg_rdata1;
+        EX_alu_src_a = EX_true_reg_rdata1;
       end
     endcase
   end
@@ -180,13 +219,13 @@ module cpu_top (
   always_comb begin
     case (EX_alu_src_b_op)
       REG_RDATA2: begin
-        EX_alu_src_b = EX_reg_rdata2;
+        EX_alu_src_b = EX_true_reg_rdata2;
       end
       IMM: begin
         EX_alu_src_b = EX_imm_result;
       end
       default: begin
-        EX_alu_src_b = EX_reg_rdata2;
+        EX_alu_src_b = EX_true_reg_rdata2;
       end
     endcase
   end
@@ -237,7 +276,7 @@ module cpu_top (
       MEM_reg_rdata2 <= 32'd0;
       MEM_reg_we <= DISABLE;
       MEM_mem_we <= DISABLE;
-      MEM_d_instr <= INST_ILLEGAL;
+      MEM_d_instr <= INST_ADDI;
       MEM_reg_wdata_op <= ALU_RESULT;
       MEM_imm_result <= 32'd0;
     end else begin
@@ -277,7 +316,7 @@ module cpu_top (
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       WR_reg_waddr <= 32'd0;
-      WR_d_instr <= INST_ILLEGAL;
+      WR_d_instr <= INST_ADDI;
       WR_reg_wdata_op <= ALU_RESULT;
       WR_reg_we <= DISABLE;
       WR_pc_plus4 <= 32'd0;
