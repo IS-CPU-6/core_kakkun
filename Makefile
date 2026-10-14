@@ -30,6 +30,9 @@ $(TARGET): $(SRCS)
 test: $(TARGET)
 	./scripts/test.sh $(TEST).s $(TARGET)
 
+format:
+	verible-verilog-format --inplace $(SRCS)
+
 clean:
 	rm -rf obj_dir *.vcd build
 	
