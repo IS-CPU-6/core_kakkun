@@ -178,7 +178,7 @@ module cpu_top (
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc <= 32'd0;
+            pc <= 32'h80000000;
         end else if (!halt) begin
             pc <= pc_next;
         end
