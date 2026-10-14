@@ -31,31 +31,18 @@ module control_unit (
       end
       INST_JAL: begin
         reg_we = ABLE;
-        alu_src_b_op = IMM;
       end
       INST_JALR: begin
         reg_we = ABLE;
         alu_src_b_op = IMM;
       end
 
-      INST_BEQ: begin
-        alu_src_b_op = IMM;
-      end
-      INST_BNE: begin
-        alu_src_b_op = IMM;
-      end
-      INST_BLT: begin
-        alu_src_b_op = IMM;
-      end
-      INST_BGE: begin
-        alu_src_b_op = IMM;
-      end
-      INST_BLTU: begin
-        alu_src_b_op = IMM;
-      end
-      INST_BGEU: begin
-        alu_src_b_op = IMM;
-      end
+      INST_BEQ:  ;
+      INST_BNE:  ;
+      INST_BLT:  ;
+      INST_BGE:  ;
+      INST_BLTU: ;
+      INST_BGEU: ;
 
       INST_LB: begin
         reg_we = ABLE;

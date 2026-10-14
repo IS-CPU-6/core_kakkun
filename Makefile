@@ -36,6 +36,9 @@ test: $(TARGET) $(TEST).hex
 	@echo "=== Running test for $(TEST) ==="
 	./$(TARGET) +loadhex=$(TEST).hex
 
+format:
+	verible-verilog-format --inplace $(SRCS)
+
 clean:
 	rm -rf obj_dir *.vcd
 	
