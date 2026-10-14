@@ -17,6 +17,15 @@ module cpu_top (
     IF_pc_plus4 = IF_pc + 32'd4;
   end
 
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      IF_pc <= 32'd0;
+    end else (!halt) begin
+      IF_pc <= IF_pc_plus4;
+    end 
+  end
+
+
   instruction_memory u_instruction_memory (
       .clk  (clk),
       .rst_n(rst_n),
@@ -73,27 +82,41 @@ module cpu_top (
       .result(ID_imm_result)
   );
 
+
+  logic [31:0] ID_reg_tentative_rdata1;
+  logic [31:0] ID_reg_tentative_rdata2;
   logic [31:0] ID_reg_rdata1;
   logic [31:0] ID_reg_rdata2;
 
+  logic [ 4:0] ID_reg_addr1;
+  logic [ 4:0] ID_reg_addr2;
+  logic [ 4:0] ID_reg_waddr;
+
+  assign ID_reg_addr1 = ID_instr[19:15];
+  assign ID_reg_addr2 = ID_instr[24:20];
+  assign ID_reg_waddr = ID_instr[11:7];
 
   register_file u_register_file (
       .clk(clk),
       .rst_n(rst_n),
-      .addr1(ID_instr[19:15]),
-      .addr2(ID_instr[24:20]),
-      .waddr(WR_instr[11:7]),
+      .addr1(ID_reg_addr1),
+      .addr2(ID_reg_addr2),
+      .waddr(WR_reg_waddr),
       .wdata(WR_reg_wdata),
       .we(WR_reg_we),
-      .rdata1(ID_reg_rdata1),
-      .rdata2(ID_reg_rdata2)
+      .rdata1(ID_reg_tentative_rdata1),
+      .rdata2(ID_reg_tentative_rdata2)
   );
+
+  assign ID_reg_rdata1 = (ID_reg_addr1 == 5'd0) ?  32'd0: ((ID_reg_addr1 == WR_reg_waddr) && (WR_reg_we == ENABLE)) ? WR_reg_wdata : ID_reg_tentative_rdata1;
+  assign ID_reg_rdata2 = (ID_reg_addr2 == 5'd0) ?  32'd0: ((ID_reg_addr2 == WR_reg_waddr) && (WR_reg_we == ENABLE)) ? WR_reg_wdata : ID_reg_tentative_rdata2;
+
 
   //EX_section
 
   logic [31:0] EX_pc;
   logic [31:0] EX_pc_plus4;
-  logic [31:0] EX_instr;
+  logic [31:0] EX_reg_waddr;
   logic [31:0] EX_pc_label;
   logic [31:0] EX_pc_jump_target;
   logic EX_branch_taken;
@@ -116,7 +139,7 @@ module cpu_top (
     if (!rst_n) begin
       EX_pc <= 32'd0;
       EX_pc_plus4 <= 32'd0;
-      EX_instr <= 32'h00000013;
+      EX_reg_waddr <= 32'd0;
       EX_reg_rdata1 <= 32'd0;
       EX_reg_rdata2 <= 32'd0;
       EX_imm_result <= 32'd0;
@@ -129,7 +152,7 @@ module cpu_top (
     end else begin
       EX_pc <= ID_pc;
       EX_pc_plus4 <= ID_pc_plus4;
-      EX_instr <= ID_instr;
+      EX_reg_waddr <= ID_reg_waddr;
       EX_reg_rdata1 <= ID_reg_rdata1;
       EX_reg_rdata2 <= ID_reg_rdata2;
       EX_imm_result <= ID_imm_result;
@@ -195,7 +218,7 @@ module cpu_top (
   //MEM_section
 
   logic [31:0] MEM_pc_plus4;
-  logic [31:0] MEM_instr;
+  logic [31:0] MEM_reg_waddr;
   logic [31:0] MEM_alu_result;
   logic [31:0] MEM_reg_rdata2;
   write_enable_t MEM_reg_we;
@@ -209,7 +232,7 @@ module cpu_top (
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       MEM_pc_plus4 <= 32'd0;
-      MEM_instr <= 32'h00000013;
+      MEM_reg_waddr <= 32'd0;
       MEM_alu_result <= 32'd0;
       MEM_reg_rdata2 <= 32'd0;
       MEM_reg_we <= DISABLE;
@@ -219,7 +242,7 @@ module cpu_top (
       MEM_imm_result <= 32'd0;
     end else begin
       MEM_pc_plus4 <= EX_pc_plus4;
-      MEM_instr <= EX_instr;
+      MEM_reg_waddr <= EX_reg_waddr;
       MEM_alu_result <= EX_alu_result;
       MEM_reg_rdata2 <= EX_reg_rdata2;
       MEM_reg_we <= EX_reg_we;
@@ -241,7 +264,7 @@ module cpu_top (
   );
 
   //WR_section
-  logic [31:0] WR_instr;
+  logic [31:0] WR_reg_waddr;
   instruction_t WR_d_instr;
   reg_wdata_op_t WR_reg_wdata_op;
   write_enable_t WR_reg_we;
@@ -253,7 +276,7 @@ module cpu_top (
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-      WR_instr <= 32'h00000013;
+      WR_reg_waddr <= 32'd0;
       WR_d_instr <= INST_ILLEGAL;
       WR_reg_wdata_op <= ALU_RESULT;
       WR_reg_we <= DISABLE;
@@ -262,7 +285,7 @@ module cpu_top (
       WR_mem_rdata <= 32'd0;
       WR_alu_result <= 32'd0;
     end else begin
-      WR_instr <= MEM_instr;
+      WR_reg_waddr <= MEM_reg_waddr;
       WR_d_instr <= MEM_d_instr;
       WR_reg_wdata_op <= MEM_reg_wdata_op;
       WR_reg_we <= MEM_reg_we;
@@ -293,22 +316,11 @@ module cpu_top (
             WR_reg_wdata = WR_mem_rdata;
           end
           default: begin
-            WR_reg_wdta = WR_alu_result;
+            WR_reg_wdata = WR_alu_result;
           end
         endcase
       end
     endcase
-  end
-
-
-
-
-  always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      pc <= 32'd0;
-    end else if (!halt) begin
-      pc <= pc_next;
-    end
   end
 
 endmodule

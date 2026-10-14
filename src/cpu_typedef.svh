@@ -128,6 +128,18 @@ package cpu_pkg;
     MEM_RDATA
   } reg_wdata_op_t;
 
+  typedef enum logic [1:0] {
+    NON_STALL,
+    RAW_STALL,
+    BRANCH_STALL
+  } stall_t;
+
+  typedef enum logic [1:0] {
+    NON_FORWARD,
+    EX_FORWARD,
+    MEM_FORWARD
+  } forward_t;
+
 endpackage
 
 `endif
