@@ -20,32 +20,17 @@ VFLAGS := --binary --timing -Wall -Wno-fatal \
           -Wno-CASEINCOMPLETE -Wno-SYNCASYNCNET \
           --trace -I$(SRC_DIR)
 
-# spike simはelfしか読めないっぽいので, 一度binを生成したあとでこねこねしてelfにする
-%.bin: %.s
-	cargo run --manifest-path ./assembler/Cargo.toml -- --input $< --output $@
-
-%.o: %.bin
-	riscv64-unknown-elf-objcopy -I binary -O elf32-littleriscv -B riscv \
-		--rename-section .data=.text,alloc,load,readonly,code,contents \
-		$< $@
-
-%.elf: %.o bin.ld
-	riscv64-unknown-elf-ld -m elf32lriscv -T bin.ld --defsym=_start=0x0 -o $@ $<
-
-.SECONDARY:
+.PHONY: all test clean
 
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	@echo "=== Source updated! Rebuilding Verilator simulation model... ==="
 	verilator $(VFLAGS) $(SRCS)
-	@echo "=== Build Complete: $@ ==="
 
-test: $(TARGET) $(TEST).elf
-	@echo "=== Running test for $(TEST) ==="
-	./$(TARGET) +loadhex=$(TEST).hex
+test: $(TARGET)
+	./scripts/test.sh $(TEST).s $(TARGET)
 
 clean:
-	rm -rf obj_dir *.vcd
+	rm -rf obj_dir *.vcd build
 	
 

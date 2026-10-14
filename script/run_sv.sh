@@ -1,1 +1,0 @@
-"$(dirname $0)"/../obj_dir/Vmain $1 > $2
