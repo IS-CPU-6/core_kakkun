@@ -5,7 +5,7 @@ RV32Iのsystem verilog実装です
 
 # セットアップ
 ```
-git submodule update --init --recursive
+git submodule update --init --recursive --remote
 sudo chmod +x scripts/*.sh
 sudo chmod +x assembler/scripts/*.sh
 ```
