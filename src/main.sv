@@ -100,6 +100,5 @@ module main;
             $finish;
         end
     end
-  end
 
 endmodule

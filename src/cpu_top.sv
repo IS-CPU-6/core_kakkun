@@ -73,7 +73,7 @@ module cpu_top (
       ID_pc <= 32'd0;
       ID_instr <= 32'h00000013;
       ID_pc_plus4 <= 32'd0;
-    end else (stall == RAW_STALL) begin
+    end else if (stall == RAW_STALL) begin
       ID_instr <= ID_instr;
       ID_pc <= ID_pc;
       ID_pc_plus4 <= ID_pc_plus4;
@@ -361,8 +361,6 @@ module cpu_top (
       end
     endcase
   end
-
-    end
 
 
 
