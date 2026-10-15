@@ -40,7 +40,7 @@ module cpu_top (
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-      IF_pc <= 32'd0;
+      IF_pc <= 32'h8000_0000;
     end else if (!halt && (stall == BRANCH_STALL)) begin
       IF_pc <= EX_pc_jump_target;
     end else if (!halt && (stall == RAW_STALL)) begin
@@ -58,7 +58,7 @@ module cpu_top (
       .data (IF_instr)
   );
 
-  assign halt = (IF_instr == 32'b00000000000100000000000001110011);
+  assign halt = (WR_instr == 32'b00000000000100000000000001110011);
 
   //ID_section
 
@@ -70,9 +70,9 @@ module cpu_top (
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n || (stall == BRANCH_STALL)) begin
-      ID_pc <= 32'd0;
+      ID_pc <= 32'h8000_0000;
       ID_instr <= 32'd0;
-      ID_pc_plus4 <= 32'd0;
+      ID_pc_plus4 <= 32'h8000_0000;
     end else if (stall == RAW_STALL) begin
       ID_instr <= ID_instr;
       ID_pc <= ID_pc;
@@ -176,8 +176,8 @@ module cpu_top (
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n || (stall == RAW_STALL) || (stall == BRANCH_STALL)) begin
       EX_instr <= 32'd0;
-      EX_pc <= 32'd0;
-      EX_pc_plus4 <= 32'd0;
+      EX_pc <= 32'h8000_0000;
+      EX_pc_plus4 <= 32'h8000_0000;
       EX_reg_waddr <= 5'd0;
       EX_reg_rdata1 <= 32'd0;
       EX_reg_rdata2 <= 32'd0;
@@ -285,8 +285,8 @@ module cpu_top (
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       MEM_instr <= 32'd0;
-      MEM_pc <= 32'd0;
-      MEM_pc_plus4 <= 32'd0;
+      MEM_pc <= 32'h8000_0000;
+      MEM_pc_plus4 <= 32'h8000_0000;
       MEM_reg_waddr <= 5'd0;
       MEM_alu_result <= 32'd0;
       MEM_true_reg_rdata2 <= 32'd0;
@@ -356,13 +356,13 @@ module cpu_top (
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       WR_instr <= 32'd0;
-      WR_pc <= 32'd0;
+      WR_pc <= 32'h8000_0000;
       WR_reg_waddr <= 5'd0;
       WR_d_instr <= INST_NOP;
       WR_reg_wdata_op <= ALU_RESULT;
       WR_reg_we <= DISABLE;
       WR_mem_we <= DISABLE;
-      WR_pc_plus4 <= 32'd0;
+      WR_pc_plus4 <= 32'h8000_0000;
       WR_imm_result <= 32'd0;
       WR_mem_rdata <= 32'd0;
       WR_alu_result <= 32'd0;

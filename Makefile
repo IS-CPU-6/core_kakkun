@@ -41,6 +41,9 @@ lint:
 format:
 	verible-verilog-format --inplace $(SRCS)
 
+diff: 
+	diff -u -w $(DOC1).log $(DOC2).log
+
 clean:
 	rm -rf obj_dir *.vcd build
 	
