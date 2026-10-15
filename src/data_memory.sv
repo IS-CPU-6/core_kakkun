@@ -1,5 +1,5 @@
-`include "cpu_typedef.svh"
-import cpu_pkg::*;
+`include "cpu_typedef_pkg.svh"
+import cpu_typedef_pkg::*;
 
 module data_memory #(
     parameter int MEM_DEPTH = 1024
@@ -13,10 +13,10 @@ module data_memory #(
     output logic [31:0] rdata
 );
 
-  logic [7:0] mem0[0:MEM_DEPTH-1];
-  logic [7:0] mem1[0:MEM_DEPTH-1];
-  logic [7:0] mem2[0:MEM_DEPTH-1];
-  logic [7:0] mem3[0:MEM_DEPTH-1];
+  logic [7:0] mem0[MEM_DEPTH];
+  logic [7:0] mem1[MEM_DEPTH];
+  logic [7:0] mem2[MEM_DEPTH];
+  logic [7:0] mem3[MEM_DEPTH];
 
   initial begin
     for (int i = 0; i < MEM_DEPTH; i++) begin
@@ -39,10 +39,11 @@ module data_memory #(
       case (d_instr)
         INST_SB: begin
           case (byte_offset)
-            2'b00: byte_en = 4'b0001;
-            2'b01: byte_en = 4'b0010;
-            2'b10: byte_en = 4'b0100;
-            2'b11: byte_en = 4'b1000;
+            2'b00:   byte_en = 4'b0001;
+            2'b01:   byte_en = 4'b0010;
+            2'b10:   byte_en = 4'b0100;
+            2'b11:   byte_en = 4'b1000;
+            default: byte_en = 4'b0000;
           endcase
         end
         INST_SH: begin
@@ -74,10 +75,11 @@ module data_memory #(
 
   always_comb begin
     case (byte_offset)
-      2'b00: target_byte = raw_word[7:0];
-      2'b01: target_byte = raw_word[15:8];
-      2'b10: target_byte = raw_word[23:16];
-      2'b11: target_byte = raw_word[31:24];
+      2'b00:   target_byte = raw_word[7:0];
+      2'b01:   target_byte = raw_word[15:8];
+      2'b10:   target_byte = raw_word[23:16];
+      2'b11:   target_byte = raw_word[31:24];
+      default: target_byte = raw_word[7:0];
     endcase
 
     target_half = (byte_offset[1]) ? raw_word[31:16] : raw_word[15:0];

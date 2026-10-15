@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -euo pipefail
 
 asm_dir=$(dirname "$1")
@@ -10,7 +11,7 @@ target=$2
 mkdir -p $build_dir
 
 # .s -> .elf, .bin
-cargo run --manifest-path $assembler_dir/Cargo.toml -- --input $1 --output $build_dir/$asm_base.bin --spike-sim
+cargo run --manifest-path $assembler_dir/Cargo.toml -- --input $1 --output $build_dir/$asm_base.bin 
 $assembler_dir/scripts/generate_elf.sh $build_dir/$asm_base.bin
 # .bin -> .hex
 hexdump -v -e '1/4 "%08x\n"' $build_dir/$asm_base.bin > $build_dir/$asm_base.hex

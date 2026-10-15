@@ -8,13 +8,13 @@ module instruction_memory #(
 );
 
   string hex_file;
-  logic [31:0] temp_mem[0:MEM_DEPTH-1];
+  logic [31:0] temp_mem[MEM_DEPTH];
 
 
-  logic [7:0] mem0[0:MEM_DEPTH-1];
-  logic [7:0] mem1[0:MEM_DEPTH-1];
-  logic [7:0] mem2[0:MEM_DEPTH-1];
-  logic [7:0] mem3[0:MEM_DEPTH-1];
+  logic [7:0] mem0[MEM_DEPTH];
+  logic [7:0] mem1[MEM_DEPTH];
+  logic [7:0] mem2[MEM_DEPTH];
+  logic [7:0] mem3[MEM_DEPTH];
 
   wire [$clog2(MEM_DEPTH)-1:0] word_idx = addr[$clog2(MEM_DEPTH)+1:2];
 

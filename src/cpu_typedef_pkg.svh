@@ -1,11 +1,13 @@
-`ifndef CPU_TYPEDEF_SVH
-`define CPU_TYPEDEF_SVH
+`ifndef CPU_TYPEDEF_PKG_SVH
+`define CPU_TYPEDEF_PKG_SVH
 
-package cpu_pkg;
+package cpu_typedef_pkg;
 
-  typedef enum logic [5:0] {
+  typedef enum logic [6:0] {
 
     INST_ILLEGAL,
+
+    INST_NOP,
 
     INST_LUI,
     INST_AUIPC,

@@ -1,5 +1,5 @@
-`include "cpu_typedef.svh"
-import cpu_pkg::*;
+`include "cpu_typedef_pkg.svh"
+import cpu_typedef_pkg::*;
 
 
 module control_unit (
@@ -12,12 +12,6 @@ module control_unit (
 );
 
   always_comb begin
-
-    reg_we = DISABLE;
-    mem_we = DISABLE;
-    alu_src_b_op = REG_RDATA2;
-    alu_control = ALU_ADD;
-    reg_wdata_op = ALU_RESULT;
     case (d_instr)
 
       INST_ILLEGAL: ;
@@ -202,6 +196,14 @@ module control_unit (
         reg_we = ABLE;
         alu_control = ALU_REMU;
       end
+      default: begin
+        reg_we = DISABLE;
+        mem_we = DISABLE;
+        alu_src_b_op = REG_RDATA2;
+        alu_control = ALU_ADD;
+        reg_wdata_op = ALU_RESULT;
+      end
+
     endcase
   end
 endmodule

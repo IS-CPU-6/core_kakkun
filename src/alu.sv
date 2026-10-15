@@ -1,5 +1,5 @@
-`include "cpu_typedef.svh"
-import cpu_pkg::*;
+`include "cpu_typedef_pkg.svh"
+import cpu_typedef_pkg::*;
 
 module alu (
     input logic [31:0] src_a,

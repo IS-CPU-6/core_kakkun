@@ -1,5 +1,5 @@
-`include "cpu_typedef.svh"
-import cpu_pkg::*;
+`include "cpu_typedef_pkg.svh"
+import cpu_typedef_pkg::*;
 
 module instruction_decoder (
     input logic [31:0] instr,
@@ -16,6 +16,8 @@ module instruction_decoder (
 
   always_comb begin
     case (opcode)
+
+      7'b0000000: d_instr = INST_NOP;
 
       7'b0110111: d_instr = INST_LUI;
       7'b0010111: d_instr = INST_AUIPC;
