@@ -14,7 +14,7 @@ module data_memory #(
 );
 
   logic [31:0] internal_addr = addr - 32'h7000_0000;
-  
+
 
   logic [7:0] mem0[MEM_DEPTH];
   logic [7:0] mem1[MEM_DEPTH];
@@ -30,7 +30,7 @@ module data_memory #(
     end
   end
 
-  wire [$clog2(MEM_DEPTH)-1:0] word_idx = addr[$clog2(MEM_DEPTH)+1 : 2];
+  wire [$clog2(MEM_DEPTH)-1:0] word_idx = internal_addr[$clog2(MEM_DEPTH)+1 : 2];
   wire [1:0] byte_offset = addr[1:0];
 
   logic [3:0] byte_en;

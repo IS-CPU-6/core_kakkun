@@ -351,6 +351,7 @@ module cpu_top (
   logic [31:0] WR_mem_rdata;
   logic [31:0] WR_alu_result;
   logic [31:0] WR_reg_wdata;
+  logic [31:0] WR_true_reg_rdata2;
 
 
   always_ff @(posedge clk or negedge rst_n) begin
@@ -366,6 +367,7 @@ module cpu_top (
       WR_imm_result <= 32'd0;
       WR_mem_rdata <= 32'd0;
       WR_alu_result <= 32'd0;
+      WR_true_reg_rdata2 <= 32'd0;
     end else begin
       WR_instr <= MEM_instr;
       WR_pc <= MEM_pc;
@@ -378,6 +380,7 @@ module cpu_top (
       WR_imm_result <= MEM_imm_result;
       WR_mem_rdata <= MEM_mem_rdata;
       WR_alu_result <= MEM_alu_result;
+      WR_true_reg_rdata2 <= MEM_true_reg_rdata2;
     end
   end
 
