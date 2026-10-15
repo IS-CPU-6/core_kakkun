@@ -13,6 +13,9 @@ module data_memory #(
     output logic [31:0] rdata
 );
 
+  logic [31:0] internal_addr = addr - 32'h7000_0000;
+  
+
   logic [7:0] mem0[MEM_DEPTH];
   logic [7:0] mem1[MEM_DEPTH];
   logic [7:0] mem2[MEM_DEPTH];
