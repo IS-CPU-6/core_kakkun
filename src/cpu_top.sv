@@ -8,24 +8,24 @@ module cpu_top (
 );
   //hazard_section
 
-  stall_t stall;
+  stall_t   stall;
   forward_t rdata1_forward;
   forward_t rdata2_forward;
 
   hazard_unit u_hazard_unit (
-    .EX_branch_taken (EX_branch_taken),
-    .ID_d_instr (ID_d_instr),
-    .EX_d_instr (EX_d_instr),
-    .MEM_d_instr (MEM_d_instr),
-    .EX_reg_we (EX_reg_we),
-    .MEM_reg_we (MEM_reg_we),
-    .ID_reg_addr1 (ID_reg_addr1),
-    .ID_reg_addr2 (ID_reg_addr2),
-    .EX_reg_waddr (EX_reg_waddr),
-    .MEM_reg_waddr (MEM_reg_waddr),
-    .stall (stall),
-    .rdata1_forward (rdata1_forward),
-    .rdata2_forward (rdata2_forward)
+      .EX_branch_taken(EX_branch_taken),
+      .ID_d_instr(ID_d_instr),
+      .EX_d_instr(EX_d_instr),
+      .MEM_d_instr(MEM_d_instr),
+      .EX_reg_we(EX_reg_we),
+      .MEM_reg_we(MEM_reg_we),
+      .ID_reg_addr1(ID_reg_addr1),
+      .ID_reg_addr2(ID_reg_addr2),
+      .EX_reg_waddr(EX_reg_waddr),
+      .MEM_reg_waddr(MEM_reg_waddr),
+      .stall(stall),
+      .rdata1_forward(rdata1_forward),
+      .rdata2_forward(rdata2_forward)
   );
 
   //IF_section
@@ -155,7 +155,7 @@ module cpu_top (
   logic [31:0] EX_reg_rdata1;
   logic [31:0] EX_reg_rdata2;
   logic [31:0] EX_true_reg_rdata1;
-  logic [31:0] EX_true_reg_redata2;
+  logic [31:0] EX_true_reg_rdata2;
   logic [31:0] EX_imm_result;
   forward_t EX_rdata1_forward;
   forward_t EX_rdata2_forward;
@@ -203,7 +203,8 @@ module cpu_top (
     end
   end
 
-  assign EX_true_reg_rdata1 = 
+  assign EX_true_reg_rdata1 = (EX_rdata1_forward == EX_FORWARD) ? MEM_forward_wdata : (EX_rdata1_forward == MEM_FORWARD) ? WR_reg_wdata : EX_reg_rdata1;
+  assign EX_true_reg_rdata2 = (EX_rdata2_forward == EX_FORWARD) ? MEM_forward_wdata : (EX_rdata2_forward == MEM_FORWARD) ? WR_reg_wdata : EX_reg_rdata2;
 
   always_comb begin
     case (EX_d_instr)
@@ -244,12 +245,12 @@ module cpu_top (
     case (EX_d_instr)
       INST_JAL:  EX_branch_taken = 1'b1;
       INST_JALR: EX_branch_taken = 1'b1;
-      INST_BEQ:  EX_branch_taken = (EX_reg_rdata1 == EX_reg_rdata2);
-      INST_BNE:  EX_branch_taken = (EX_reg_rdata1 != EX_reg_rdata2);
-      INST_BLT:  EX_branch_taken = ($signed(EX_reg_rdata1) < $signed(EX_reg_rdata2));
-      INST_BGE:  EX_branch_taken = ($signed(EX_reg_rdata1) >= $signed(EX_reg_rdata2));
-      INST_BLTU: EX_branch_taken = (EX_reg_rdata1 < EX_reg_rdata2);
-      INST_BGEU: EX_branch_taken = (EX_reg_rdata1 >= EX_reg_rdata2);
+      INST_BEQ:  EX_branch_taken = (EX_true_reg_rdata1 == EX_true_reg_rdata2);
+      INST_BNE:  EX_branch_taken = (EX_true_reg_rdata1 != EX_true_reg_rdata2);
+      INST_BLT:  EX_branch_taken = ($signed(EX_true_reg_rdata1) < $signed(EX_true_reg_rdata2));
+      INST_BGE:  EX_branch_taken = ($signed(EX_true_reg_rdata1) >= $signed(EX_true_reg_rdata2));
+      INST_BLTU: EX_branch_taken = (EX_true_reg_rdata1 < EX_true_reg_rdata2);
+      INST_BGEU: EX_branch_taken = (EX_true_reg_rdata1 >= EX_true_reg_rdata2);
       default:   EX_branch_taken = 1'b0;
     endcase
   end
@@ -259,13 +260,14 @@ module cpu_top (
   logic [31:0] MEM_pc_plus4;
   logic [31:0] MEM_reg_waddr;
   logic [31:0] MEM_alu_result;
-  logic [31:0] MEM_reg_rdata2;
+  logic [31:0] MEM_true_reg_rdata2;
   write_enable_t MEM_reg_we;
   write_enable_t MEM_mem_we;
   instruction_t MEM_d_instr;
   logic [31:0] MEM_mem_rdata;
   reg_wdata_op_t MEM_reg_wdata_op;
   logic [31:0] MEM_imm_result;
+  logic [31:0] MEM_forward_wdata;
 
 
   always_ff @(posedge clk or negedge rst_n) begin
@@ -273,7 +275,7 @@ module cpu_top (
       MEM_pc_plus4 <= 32'd0;
       MEM_reg_waddr <= 32'd0;
       MEM_alu_result <= 32'd0;
-      MEM_reg_rdata2 <= 32'd0;
+      MEM_true_reg_rdata2 <= 32'd0;
       MEM_reg_we <= DISABLE;
       MEM_mem_we <= DISABLE;
       MEM_d_instr <= INST_ADDI;
@@ -283,7 +285,7 @@ module cpu_top (
       MEM_pc_plus4 <= EX_pc_plus4;
       MEM_reg_waddr <= EX_reg_waddr;
       MEM_alu_result <= EX_alu_result;
-      MEM_reg_rdata2 <= EX_reg_rdata2;
+      MEM_true_reg_rdata2 <= EX_true_reg_rdata2;
       MEM_reg_we <= EX_reg_we;
       MEM_mem_we <= EX_mem_we;
       MEM_d_instr <= EX_d_instr;
@@ -296,14 +298,32 @@ module cpu_top (
       .clk(clk),
       .rst_n(rst_n),
       .addr(MEM_alu_result),
-      .wdata(MEM_reg_rdata2),
+      .wdata(MEM_true_reg_rdata2),
       .we(MEM_mem_we),
       .d_instr(MEM_d_instr),
       .rdata(MEM_mem_rdata)
   );
 
+  always_comb begin
+    case (MEM_d_instr)
+      INST_LUI: begin
+        MEM_forward_wdata = MEM_imm_result;
+      end
+      INST_JAL: begin
+        MEM_forward_wdata = MEM_pc_plus4;
+      end
+      INST_JALR: begin
+        MEM_forward_wdata = MEM_pc_plus4;
+      end
+      default: begin
+        MEM_forward_wdata = MEM_alu_result;
+      end
+    endcase
+  end
+
+
   //WR_section
-  logic [31:0] WR_reg_waddr;
+  logic [4:0] WR_reg_waddr;
   instruction_t WR_d_instr;
   reg_wdata_op_t WR_reg_wdata_op;
   write_enable_t WR_reg_we;
@@ -362,17 +382,6 @@ module cpu_top (
     endcase
   end
 
-
-
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            pc <= 32'h80000000;
-        end else if (!halt) begin
-            pc <= pc_next;
-        end
-    end
-
-    assign halt = (d_instr == INST_EBREAK);
 endmodule
 
 

@@ -11,6 +11,7 @@ SRCS := $(SRC_DIR)/main.sv \
         $(SRC_DIR)/register_file.sv \
         $(SRC_DIR)/alu.sv \
         $(SRC_DIR)/data_memory.sv \
+        $(SRC_DIR)/hazard_unit.sv \
         $(SRC_DIR)/cpu_typedef.svh 
 
 VERILOG_FILES := $(filter-out %.svh, $(SRCS))
@@ -20,7 +21,7 @@ VFLAGS := --binary --timing -Wall -Wno-fatal \
           -Wno-CASEINCOMPLETE -Wno-SYNCASYNCNET \
           --trace -I$(SRC_DIR)
 
-.PHONY: all test clean
+.PHONY: all test clean format
 
 all: $(TARGET)
 
