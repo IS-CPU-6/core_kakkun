@@ -40,7 +40,7 @@ module cpu_top (
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-      IF_pc <= 32'd0;
+      IF_pc <= 32'h80000000;
     end else if (!halt && (stall == BRANCH_STALL)) begin
       IF_pc <= EX_pc_jump_target;
     end else if (!halt && (stall == RAW_STALL)) begin
