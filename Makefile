@@ -36,7 +36,7 @@ test_only: $(TARGET)
 	$(TARGET)
 
 lint:
-	verible-verilog-lint $(SRCS)
+	verilator --lint-only -Isrc $(SRCS)
 
 format:
 	verible-verilog-format --inplace $(SRCS)
