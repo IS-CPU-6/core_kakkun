@@ -21,6 +21,7 @@ module data_memory #(
   logic [7:0] mem2[MEM_DEPTH];
   logic [7:0] mem3[MEM_DEPTH];
 
+`ifdef VERILATOR
   initial begin
     for (int i = 0; i < MEM_DEPTH; i++) begin
       mem0[i] = 8'd0;
@@ -29,6 +30,7 @@ module data_memory #(
       mem3[i] = 8'd0;
     end
   end
+`endif
 
   wire [$clog2(MEM_DEPTH)-1:0] word_idx = internal_addr[$clog2(MEM_DEPTH)+1 : 2];
   wire [1:0] byte_offset = addr[1:0];

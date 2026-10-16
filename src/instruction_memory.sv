@@ -10,7 +10,9 @@ module instruction_memory #(
   logic [31:0] internal_addr;
   assign internal_addr = addr - 32'h8000_0000;
 
+`ifdef VERILATOR
   string hex_file;
+`endif
   logic [31:0] temp_mem[MEM_DEPTH];
 
 
@@ -23,6 +25,7 @@ module instruction_memory #(
 
   assign data = {mem3[word_idx], mem2[word_idx], mem1[word_idx], mem0[word_idx]};
 
+`ifdef VERILATOR
   initial begin
     for (int i = 0; i < MEM_DEPTH; i++) begin
       mem0[i] = 8'd0;
@@ -45,6 +48,7 @@ module instruction_memory #(
       mem3[i] = temp_mem[i][31:24];
     end
   end
+`endif
 
 
 endmodule

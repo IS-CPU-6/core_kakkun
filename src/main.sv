@@ -12,6 +12,7 @@ module main;
       .halt (halt)
   );
 
+`ifdef VERILATOR
   initial begin
     clk = 1'b0;
     forever begin
@@ -35,6 +36,8 @@ module main;
     #2000;
     $finish;
   end
+
+`endif
 
   always @(posedge clk) begin
     if (rst_n && !halt) begin
