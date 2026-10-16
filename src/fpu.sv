@@ -5,3 +5,4 @@ module fpu (
     instruction_t d_instr,
     output logic [31:0] fpu_result
 );
+endmodule
