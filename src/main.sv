@@ -63,6 +63,7 @@ module main;
   end
 
 
+
   always @(posedge clk) begin
     if (rst_n && halt) begin
       repeat (2) @(posedge clk);
