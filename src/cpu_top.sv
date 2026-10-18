@@ -3,9 +3,11 @@
 import cpu_typedef_pkg::*;
 
 module cpu_top (
-    input  logic clk,
-    input  logic rst_n,
-    output logic halt
+    input logic clk,
+    input logic rst_n,
+    output logic halt,
+    output logic [31:0] imem_addr,
+    input logic [31:0] imem_rdata
 );
 
   stall_t stall;
@@ -122,7 +124,7 @@ module cpu_top (
     IF_pc_plus4 = IF_pc + 32'd4;
   end
 
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       IF_pc <= 32'h8000_0000;
     end else if (!halt && (stall == BRANCH_STALL)) begin
@@ -137,12 +139,14 @@ module cpu_top (
   end
 
 
-  instruction_memory u_instruction_memory (
-      .clk  (clk),
-      .rst_n(rst_n),
-      .addr (IF_pc),
-      .data (IF_instr)
-  );
+  // instruction_memory u_instruction_memory (
+  //     .clk  (clk),
+  //     .rst_n(rst_n),
+  //     .addr (IF_pc),
+  //     .data (IF_instr)
+  // );
+  assign imem_addr = IF_pc;
+  assign IF_instr = imem_rdata;
 
   assign halt = (WR_instr == 32'b00000000000100000000000001110011);
   //ID_section
@@ -153,7 +157,7 @@ module cpu_top (
   logic [31:0] ID_instr;
   instruction_t ID_d_instr;*/
 
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       ID_pc <= 32'h8000_0000;
       ID_instr <= 32'd0;
@@ -267,7 +271,7 @@ module cpu_top (
   write_enable_t EX_mem_we;
   reg_wdata_op_t EX_reg_wdata_op;*/
 
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       EX_instr <= 32'd0;
       EX_pc <= 32'h8000_0000;
@@ -433,7 +437,7 @@ module cpu_top (
   logic [31:0] MEM_true_reg_rdata1;
   stall_t MEM_stall;
 
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       MEM_instr <= 32'd0;
       MEM_pc <= 32'h8000_0000;
@@ -528,7 +532,7 @@ module cpu_top (
   logic WR_branch_taken;
   logic [31:0] WR_true_reg_rdata1;
   stall_t WR_stall;
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       WR_instr <= 32'd0;
       WR_pc <= 32'h8000_0000;
@@ -613,7 +617,7 @@ module cpu_top (
   logic [31:0] WR_former_true_reg_rdata2;
   stall_t WR_former_stall;
   instruction_t WR_former_d_instr;
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       WR_former_instr <= 32'd0;
       WR_former_branch_taken <= 1'b0;

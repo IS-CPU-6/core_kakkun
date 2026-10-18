@@ -13,7 +13,7 @@ module register_file (
   logic [31:0] regs[32];
   assign rdata1 = regs[addr1];
   assign rdata2 = regs[addr2];
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       for (int i = 0; i < 32; i++) begin
         regs[i] <= 32'd0;

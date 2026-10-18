@@ -18,7 +18,7 @@ module fpu_register_file (
   assign rdata2 = regs[addr2];
   assign rdata3 = regs[addr3];
 
-  always_ff @(posedge clk or negedge rst_n) begin
+  always_ff @(posedge clk) begin
     if (!rst_n) begin
       for (int i = 0; i < 32; i++) begin
         regs[i] <= 32'd0;

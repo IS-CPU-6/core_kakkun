@@ -7,9 +7,11 @@ module main;
   logic halt;
 
   cpu_top u_cpu_top (
-      .clk  (clk),
+      .clk(clk),
       .rst_n(rst_n),
-      .halt (halt)
+      .halt(halt),
+      .imem_addr(imem_addr),
+      .imem_rdata(imem_rdata)
   );
 
 `ifdef VERILATOR
