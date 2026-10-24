@@ -1,4 +1,4 @@
-module fpu_register_file (
+module f_register_file (
     input logic clk,
     input logic rst_n,
     input logic [4:0] addr1,

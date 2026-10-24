@@ -79,6 +79,10 @@ package cpu_typedef_pkg;
     INST_FNMSUB_S,
     INST_FNMADD_S,
 
+    INST_FSGNJ_S,
+    INST_FSGNJN_S,
+    INST_FSGNJX_S,
+
     INST_FLE_S,
     INST_FLT_S,
     INST_FEQ_S,
@@ -125,9 +129,15 @@ package cpu_typedef_pkg;
     IMM
   } alu_src_b_op_t;
 
-  typedef enum logic [0:0] {
+  typedef enum logic {
+    F_REG_RDATA1,
+    REG_RDATA1
+  } fpu_src_a_op_t;
+
+  typedef enum logic [1:0] {
     ALU_RESULT,
-    MEM_RDATA
+    MEM_RDATA,
+    FPU_RESULT
   } reg_wdata_op_t;
 
   typedef enum logic [1:0] {
@@ -141,6 +151,45 @@ package cpu_typedef_pkg;
     EX_FORWARD,
     MEM_FORWARD
   } forward_t;
+
+  typedef enum logic {
+    F_FPU_RESULT,
+    F_MEM_RDATA
+  } f_reg_wdata_op_t;
+
+  typedef enum logic {
+    MEM_REG_RDATA2,
+    MEM_F_REG_RDATA2
+  } mem_wdata_op_t;
+
+
+  typedef enum logic [4:0] {
+    FPU_ADD,
+    FPU_SUB,
+    FPU_MUL,
+    FPU_DIV,
+    FPU_SQRT,
+    FPU_SGNJ,
+    FPU_SGNJN,
+    FPU_SGNJX,
+    FPU_MIN,
+    FPU_MAX,
+    FPU_EQ,
+    FPU_LT,
+    FPU_LE,
+    FPU_CLASS,
+    FPU_CVT_W_S,
+    FPU_CVT_WU_S,
+    FPU_CVT_S_W,
+    FPU_CVT_S_WU,
+    FPU_MV_X_W,
+    FPU_MV_W_X,
+    FPU_MADD,
+    FPU_MSUB,
+    FPU_NMSUB,
+    FPU_NMADD,
+    FPU_NORM
+  } fpu_op_t;
 
 endpackage
 

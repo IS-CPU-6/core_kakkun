@@ -13,7 +13,8 @@ module data_memory #(
     output logic [31:0] rdata
 );
 
-  logic [31:0] internal_addr = addr - 32'h7000_0000;
+  logic [31:0] internal_addr ;
+  assign internal_addr = addr - 32'h7000_0000;
 
 
   logic [7:0] mem0[MEM_DEPTH];
@@ -57,6 +58,9 @@ module data_memory #(
         INST_SW: begin
           byte_en = 4'b1111;
         end
+        INST_FSW: begin
+          byte_en = 4'b1111;
+        end
         default: byte_en = 4'b0000;
       endcase
     end
@@ -97,6 +101,7 @@ module data_memory #(
       INST_LH:  rdata = {{16{target_half[15]}}, target_half};
       INST_LHU: rdata = {16'd0, target_half};
       INST_LW:  rdata = raw_word;
+      INST_FLW: rdata = raw_word;
       default:  rdata = 32'd0;
     endcase
   end

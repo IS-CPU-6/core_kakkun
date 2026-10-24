@@ -9,11 +9,13 @@ module instruction_decoder (
   logic [6:0] opcode;
   logic [2:0] funct3;
   logic [6:0] funct7;
+  logic [4:0] funct5;
+
 
   assign opcode = instr[6:0];
   assign funct3 = instr[14:12];
   assign funct7 = instr[31:25];
-
+  assign funct5 = instr[24:20];
   always_comb begin
     case (opcode)
 
@@ -109,6 +111,68 @@ module instruction_decoder (
           endcase
         end
       end
+
+      7'b0000111: d_instr = INST_FLW;
+      7'b0100111: d_instr = INST_FSW;
+
+      7'b1000011: d_instr = INST_FMADD_S;
+      7'b1000111: d_instr = INST_FMSUB_S;
+      7'b1001011: d_instr = INST_FNMSUB_S;
+      7'b1001111: d_instr = INST_FNMADD_S;
+
+      7'b1010011: begin
+        case (funct7)
+          7'b0000000: d_instr = INST_FADD_S;
+          7'b0000100: d_instr = INST_FSUB_S;
+          7'b0001000: d_instr = INST_FMUL_S;
+          7'b0001100: d_instr = INST_FDIV_S;
+          7'b0101100: d_instr = INST_FSQRT_S;
+          7'b0010100: begin
+            case (funct3)
+              3'b000:  d_instr = INST_FMIN_S;
+              3'b001:  d_instr = INST_FMAX_S;
+              default: d_instr = INST_ILLEGAL;
+            endcase
+          end
+
+          7'b1010000: begin
+            case (funct3)
+              3'b000:  d_instr = INST_FSGNJ_S;
+              3'b001:  d_instr = INST_FSGNJN_S;
+              3'b010:  d_instr = INST_FSGNJX_S;
+              default: d_instr = INST_ILLEGAL;
+            endcase
+          end
+
+          7'b1100000: begin
+            case (funct5)
+              5'b00000: d_instr = INST_FCVT_W_S;
+              5'b00001: d_instr = INST_FCVT_WU_S;
+              default:  d_instr = INST_ILLEGAL;
+            endcase
+          end
+
+          7'b1101000: begin
+            case (funct5)
+              5'b00000: d_instr = INST_FCVT_S_W;
+              5'b00001: d_instr = INST_FCVT_S_WU;
+              default:  d_instr = INST_ILLEGAL;
+            endcase
+          end
+
+          7'b1110000: begin
+            case (funct3)
+              3'b000:  d_instr = INST_FMV_X_W;
+              3'b001:  d_instr = INST_FCLASS_S;
+              default: d_instr = INST_ILLEGAL;
+            endcase
+            ;
+          end
+        endcase
+      end
+
+      7'b1111000: d_instr = INST_FMV_W_X;
+
 
       7'b1110011: d_instr = INST_EBREAK;
       default: d_instr = INST_ILLEGAL;
