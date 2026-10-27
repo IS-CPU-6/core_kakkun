@@ -13,7 +13,7 @@ module data_memory #(
     output logic [31:0] rdata
 );
 
-  logic [31:0] internal_addr ;
+  logic [31:0] internal_addr;
   assign internal_addr = addr - 32'h7000_0000;
 
 
